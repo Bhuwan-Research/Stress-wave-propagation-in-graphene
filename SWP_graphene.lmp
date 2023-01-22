@@ -1,0 +1,122 @@
+## stress wave propagation in graphene when impacted by ullerene projectile.
+
+log				EminC180GS20x20nm1KNpt.log
+variable		  EquiRun equal  20000
+variable	  	time_step equal 0.0001
+variable        EquiDump equal "v_EquiRun/50"
+
+
+units            metal
+dimension 	     3 
+boundary         p p p           #NPT BC=ppp    #Nve BC=ssp  
+atom_style   	 atomic
+newton           on
+
+
+##---------------ATOM DEFINITION------------------------------
+
+read_data		GSArm20x20.data extra/atom/types 1  
+variable 		x1 equal "xlo+3" 
+variable		x2 equal "xhi-3" 
+variable 		y1 equal "ylo+3" 
+variable		y2 equal "yhi-3" 
+variable		xc equal "(xhi+xlo)/2" 
+variable		yc equal "(yhi+ylo)/2" 
+read_data		C180.data add append offset 1 0 0 0 0 shift ${xc} ${yc} 20  # 
+
+group 		  GSsheet type 1 
+group		    projectile type 2 
+region		  GScentre block ${x1} ${x2} ${y1} ${y2} -20 5 units box
+group 		  centre region GScentre
+group		    edge subtract GSsheet centre
+
+
+
+##---------------FORCE FIELDS---------------------------------
+
+pair_style    	airebo 3.0
+pair_coeff      * * CH.airebo C C
+
+min_style 		  cg
+minimize 	     1.0e-5 1.0e-8 10000 100000				
+
+
+##---------------COMPUTES-------------------------------------
+
+variable 		time equal "step*dt"
+variable 		TE equal "-etotal"
+variable		PE equal "-pe"
+variable		KE equal "-ke"
+compute		    P1 projectile pe/atom
+compute         P2 projectile reduce sum c_P1
+variable	    PEp equal -c_P2 
+compute			  KEp projectile ke/atom 
+compute     	KEpp projectile reduce sum c_KEp
+variable  		KEp equal c_KEpp 
+
+variable		Temp equal "temp"
+variable		Pxx equal "-pxx" 			   # bar
+variable		Pyy equal "-pyy"
+variable		Pzz equal "-pzz"
+variable 	  p2x equal xcm(P2,x) 
+
+variable 	  p2vx equal vcm(P2,x) 
+
+
+reset_timestep		0
+timestep 	        ${time_step}
+
+
+#------------------relaxing graphene sheet--------------------
+
+velocity       GSsheet create 300.0 4928459 rot yes dist gaussian	
+fix 	        1 GSsheet npt temp 1 1 0.1 x 0 0 1 y 0 0 1           #Tdamp=$(1000.0*dt)
+
+thermo 		     200
+thermo_style 		custom step etotal pe ke temp  pxx pzz 
+
+fix 			    def1 all print 100 "${time} ${TE} ${PE} ${KE} ${Temp} ${Pxx} ${Pyy} ${Pzz}" file EminC180GS20x20nm1Knpt.txt screen no
+
+dump      			1 all custom ${EquiDump} EmimC180GS20x20nm1KNpt.lammpstrj id x y z 
+
+run           ${EquiRun}
+unfix        1
+
+unfix	  	   def1
+undump			 1
+
+#------------------------------- Impact loading----------------------------------------
+
+variable  		  Vel index  3.6
+ 
+variable		 Def_Run equal 15000
+variable		 Vp equal -10*${Vel}	  # A/s
+variable		dump_freq equal "v_Def_Run/100"
+
+reset_timestep		0 
+timestep 		    0.0001  
+
+
+compute 	    1 GSsheet stress/atom NULL                   
+fix        		s1 GSsheet ave/atom 1 ${dump_freq} ${dump_freq} c_1[1] c_1[2]  #bar*vol...xx,yy,zz,xy,xz,yz 
+
+
+variable       Prj_z equal xcm(projectile,z)
+variable       Prj_Vz equal vcm(projectile,z) 
+
+##--------------fixes------------------------------------
+
+fix 		  3 projectile rigid single
+fix 		  1 centre nve   
+fix 		  2 edge setforce 0 0 0  
+velocity      edge set 0 0 0
+velocity	  projectile set 0 0 ${Vp} sum no	units box 
+
+thermo 		   	100   
+thermo_style 	custom step etotal  temp  v_Prj_z   v_KEp   
+
+fix 			def2 all print 10 "${time} ${Prj_Vz} " file ImpC180GS20x20nm1K${Vel}kmps.txt screen no 
+
+dump     	 	1 all custom ${dump_freq}  ImpC180GS20x20nm1K${Vel}kmpsNpt.lammpstrj id type x y z  f_s1[1] f_s1[2] 
+run 		  ${Def_Run}
+
