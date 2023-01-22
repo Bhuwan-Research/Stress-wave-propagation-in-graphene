@@ -1,10 +1,11 @@
 #LAMMPS #moleculardynamics #graphene #impacttest
 A small tutorial analyzes Stress Wave Propagation in a single-layer graphene sheet under fullerene projectile impact.
-The AIREBO potential is used in molecular dynamics software (LAMMPS) for atomic interactions. 
+The AIREBO potential is used in molecular dynamics software (LAMMPS) for atomic interactions. The model consist of 20 nm x 20 nm graphene sheet,
+fullerene projectile (C180).
 The projectile was assigned a velocity of 3.6 km/s and hit in the middle of a fixed graphene sheet. 
 The stress wave propagation in terms of planner stress is presented in the video.
 
-Impact model : Target - 20 nm x 20 nm graphene sheet, projectile - Fullerence C180
+
 
 
 Steps for simulations:
