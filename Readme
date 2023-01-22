@@ -6,8 +6,6 @@ The projectile was assigned a velocity of 3.6 km/s and hit in the middle of a fi
 The stress wave propagation in terms of planner stress is presented in the video.
 
 
-
-
 Steps for simulations:
 1. keep all the data files (C180.data, GSArm20x20.data) and script file in one folder.
 2. Run the Lammps script file (SWP_graphene.lmp).
