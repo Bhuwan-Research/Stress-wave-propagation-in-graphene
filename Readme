@@ -4,6 +4,16 @@ The AIREBO potential is used in molecular dynamics software (LAMMPS) for atomic 
 The projectile was assigned a velocity of 3.6 km/s and hit in the middle of a fixed graphene sheet. 
 The stress wave propagation in terms of planner stress is presented in the video.
 
+Impact model : Target - 20 nm x 20 nm graphene sheet, projectile - Fullerence C180
+
+
+Steps for simulations:
+1. keep all the data files (C180.data, GSArm20x20.data) and script file in one folder.
+2. Run the Lammps script file (SWP_graphene.lmp).
+3. Open the trajectory file using VMD.
+4. caluculate and plot the equvalent atomic planner stress using  Matlab.
+
+
 This tutorial can be helpful to graduate students who are new to molecular dynamics.
 
 To get more new interesting tutorial on Molecular Dynamics simulations follow me on :
