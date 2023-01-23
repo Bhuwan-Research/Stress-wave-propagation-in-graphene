@@ -5,13 +5,13 @@ fullerene projectile (C180).
 The projectile was assigned a velocity of 3.6 km/s and hit in the middle of a fixed graphene sheet. 
 The stress wave propagation in terms of planner stress is presented in the video.
 
+MD model :
 ![SWPModel](https://user-images.githubusercontent.com/93893601/213972965-aefbcd21-3090-4fcd-b20e-9562744c346a.JPG)
 
 Steps for simulations:
 1. keep all the data files (C180.data, GSArm20x20.data) and script file in one folder.
 2. Run the Lammps script file (SWP_graphene.lmp).
-3. Open the trajectory file using VMD.
-4. caluculate and plot the equvalent atomic planner stress using  Matlab.
+3. Open the trajectory file using VMD or OVITO.
 
 
 This tutorial can be helpful to graduate students who are new to molecular dynamics.
